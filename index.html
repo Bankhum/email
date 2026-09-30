@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ค้นหาอีเมลนักเรียน</title>
+
+<style>
+body{
+  margin:0;
+  font-family:Arial,"Noto Sans Thai",sans-serif;
+  background:#f3f8f4;
+}
+
+header{
+  background:#dff5e5;
+  padding:30px 20px;
+  text-align:center;
+}
+
+header h1{
+  margin:0;
+  color:#176b3a;
+}
+
+.container{
+  max-width:800px;
+  margin:30px auto;
+  padding:20px;
+}
+
+.search-box{
+  background:white;
+  padding:20px;
+  border-radius:16px;
+  box-shadow:0 4px 20px rgba(0,0,0,.08);
+}
+
+input{
+  width:100%;
+  padding:16px;
+  font-size:18px;
+  border:2px solid #cce5d3;
+  border-radius:12px;
+  box-sizing:border-box;
+}
+
+.status{
+  margin-top:12px;
+  color:#666;
+}
+
+.card{
+  background:white;
+  margin-top:12px;
+  padding:16px;
+  border-radius:14px;
+  box-shadow:0 3px 12px rgba(0,0,0,.06);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:15px;
+}
+
+.name{
+  font-weight:bold;
+  font-size:18px;
+  color:#235b36;
+}
+
+.email{
+  margin-top:5px;
+  color:#555;
+}
+
+button{
+  border:none;
+  background:#198754;
+  color:white;
+  padding:10px 15px;
+  border-radius:9px;
+  cursor:pointer;
+}
+
+.message{
+  text-align:center;
+  padding:30px;
+  color:#777;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>🔎 ระบบค้นหาอีเมลนักเรียน</h1>
+  <div>โรงเรียนบ้านคุ้ม (ประสารราษฎร์วิทยา)</div>
+</header>
+
+<div class="container">
+
+  <div class="search-box">
+    <input
+      id="search"
+      type="text"
+      placeholder="พิมพ์ชื่อ นามสกุล หรืออีเมล..."
+    >
+
+    <div id="status" class="status">
+      กำลังโหลดข้อมูล...
+    </div>
+  </div>
+
+  <div id="results">
+    <div class="message">กำลังโหลดข้อมูลนักเรียน...</div>
+  </div>
+
+</div>
+
+<script>
+
+const API =
+"https://script.google.com/macros/s/AKfycbw9DSA7KqZnt2fKGPTlvNtxfmANm0QLVkpEBe7Pw5viDLKpX_ASnVHHWioL7H1okUknYQ/exec";
+
+let students = [];
+
+const search = document.getElementById("search");
+const status = document.getElementById("status");
+const results = document.getElementById("results");
+
+async function loadData(){
+
+  try{
+
+    const response = await fetch(API);
+    const data = await response.json();
+
+    students = data.students || [];
+
+    status.textContent =
+      "มีข้อมูลนักเรียน " + students.length + " คน";
+
+    results.innerHTML =
+      '<div class="message">พิมพ์ชื่อเพื่อเริ่มค้นหา</div>';
+
+  }catch(error){
+
+    console.error(error);
+
+    status.textContent =
+      "โหลดข้อมูลไม่สำเร็จ";
+
+    results.innerHTML =
+      '<div class="message">เกิดข้อผิดพลาดในการเชื่อมต่อ</div>';
+  }
+}
+
+search.addEventListener("input",function(){
+
+  const keyword =
+    this.value.trim().toLowerCase();
+
+  if(!keyword){
+
+    results.innerHTML =
+      '<div class="message">พิมพ์ชื่อเพื่อเริ่มค้นหา</div>';
+
+    return;
+  }
+
+  const found =
+    students.filter(student => {
+
+      const name =
+        (student.name || "").toLowerCase();
+
+      const email =
+        (student.email || "").toLowerCase();
+
+      return (
+        name.includes(keyword) ||
+        email.includes(keyword)
+      );
+
+    });
+
+  showResults(found);
+});
+
+function showResults(data){
+
+  if(data.length === 0){
+
+    results.innerHTML =
+      '<div class="message">ไม่พบข้อมูล</div>';
+
+    return;
+  }
+
+  results.innerHTML =
+    data.slice(0,50).map(student => `
+
+      <div class="card">
+
+        <div>
+          <div class="name">${student.name}</div>
+          <div class="email">${student.email}</div>
+        </div>
+
+        <button onclick="copyEmail('${student.email}',this)">
+          📋 คัดลอก
+        </button>
+
+      </div>
+
+    `).join("");
+}
+
+async function copyEmail(email,button){
+
+  await navigator.clipboard.writeText(email);
+
+  const old = button.innerHTML;
+
+  button.innerHTML = "✓ คัดลอกแล้ว";
+
+  setTimeout(()=>{
+    button.innerHTML = old;
+  },1200);
+}
+
+loadData();
+
+</script>
+
+</body>
+</html>
