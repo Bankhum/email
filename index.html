@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
   <title>ระบบค้นหาอีเมล | โรงเรียนบ้านคุ้ม</title>
 
   <style>
@@ -47,6 +48,43 @@
       padding: 20px;
       border-radius: 18px;
       box-shadow: 0 5px 22px rgba(0, 0, 0, 0.08);
+    }
+
+    .google-login {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      margin-bottom: 16px;
+      padding: 13px 16px;
+      border: 1px solid #d7d7d7;
+      border-radius: 12px;
+      background: #ffffff;
+      color: #333333;
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 15px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .google-login:hover {
+      background: #f7f7f7;
+      box-shadow: 0 2px 8px rgba(0,0,0,.08);
+    }
+
+    .google-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #4285f4;
+      color: #ffffff;
+      font-weight: bold;
+      font-size: 16px;
     }
 
     .tabs {
@@ -158,11 +196,17 @@
       text-align: center;
       color: #53665a;
       font-size: 13px;
-      line-height: 1.7;
+      line-height: 1.8;
     }
 
-    footer strong {
+    .developer-link {
       color: #245f39;
+      font-weight: bold;
+      text-decoration: none;
+    }
+
+    .developer-link:hover {
+      text-decoration: underline;
     }
 
     @media (max-width: 600px) {
@@ -193,14 +237,34 @@
 
     <div class="panel">
 
+      <a
+        href="https://accounts.google.com/"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="google-login"
+      >
+        <span class="google-icon">G</span>
+        ลงชื่อเข้าใช้ด้วย Google
+      </a>
+
       <div class="tabs">
-        <button id="studentTab" class="tab-btn active">
+
+        <button
+          id="studentTab"
+          class="tab-btn active"
+          type="button"
+        >
           👨‍🎓 นักเรียน
         </button>
 
-        <button id="teacherTab" class="tab-btn">
+        <button
+          id="teacherTab"
+          class="tab-btn"
+          type="button"
+        >
           👩‍🏫 ครู
         </button>
+
       </div>
 
       <input
@@ -218,166 +282,276 @@
     </div>
 
     <div id="results" class="results">
-      <div class="message">กำลังโหลดข้อมูล...</div>
+      <div class="message">
+        กำลังโหลดข้อมูล...
+      </div>
     </div>
 
   </div>
 
   <footer>
-    พัฒนาโดย <strong>นายดีลาภ ปราบสงบ</strong> ครูชำนาญการพิเศษ<br>
-    โรงเรียนบ้านคุ้ม (ประสารราษฎร์วิทยา)<br>
+    พัฒนาโดย
+    <a
+      href="https://www.facebook.com/gumzaa.blabla"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="developer-link"
+    >
+      นายดีลาภ ปราบสงบ
+    </a>
+    ครูชำนาญการพิเศษ
+    <br>
+
+    โรงเรียนบ้านคุ้ม (ประสารราษฎร์วิทยา)
+    <br>
+
     © 2026 โรงเรียนบ้านคุ้ม (ประสารราษฎร์วิทยา) · All rights reserved.
   </footer>
 
   <script>
+
     const API =
       "https://script.google.com/macros/s/AKfycbygBOujsdk4pUONGuiU_tqls5u54vo8_MMd9XzmVSEgBH5ar2QEK6pPeyuqSrSCk_YH8Q/exec";
 
     let currentType = "student";
     let people = [];
 
-    const searchInput = document.getElementById("search");
-    const status = document.getElementById("status");
-    const results = document.getElementById("results");
+    const searchInput =
+      document.getElementById("search");
 
-    const studentTab = document.getElementById("studentTab");
-    const teacherTab = document.getElementById("teacherTab");
+    const status =
+      document.getElementById("status");
+
+    const results =
+      document.getElementById("results");
+
+    const studentTab =
+      document.getElementById("studentTab");
+
+    const teacherTab =
+      document.getElementById("teacherTab");
+
 
     studentTab.addEventListener("click", () => {
       switchType("student");
     });
 
+
     teacherTab.addEventListener("click", () => {
       switchType("teacher");
     });
 
+
     function switchType(type) {
+
       currentType = type;
 
-      studentTab.classList.toggle("active", type === "student");
-      teacherTab.classList.toggle("active", type === "teacher");
+      studentTab.classList.toggle(
+        "active",
+        type === "student"
+      );
+
+      teacherTab.classList.toggle(
+        "active",
+        type === "teacher"
+      );
 
       searchInput.value = "";
 
       loadData();
     }
 
+
     async function loadData() {
-      status.textContent = "กำลังโหลดข้อมูล...";
+
+      status.textContent =
+        "กำลังโหลดข้อมูล...";
+
       results.innerHTML =
         '<div class="message">กำลังโหลดข้อมูล...</div>';
 
       try {
-        const response = await fetch(
-          API + "?type=" + encodeURIComponent(currentType)
-        );
 
-        const data = await response.json();
+        const response =
+          await fetch(
+            API +
+            "?type=" +
+            encodeURIComponent(currentType)
+          );
+
+        const data =
+          await response.json();
 
         if (!data.success) {
-          throw new Error(data.message || "เกิดข้อผิดพลาด");
+          throw new Error(
+            data.message ||
+            "เกิดข้อผิดพลาด"
+          );
         }
 
-        people = data.data || [];
+        people =
+          data.data || [];
 
         const label =
-          currentType === "student" ? "นักเรียน" : "ครู";
+          currentType === "student"
+            ? "นักเรียน"
+            : "ครู";
 
         status.textContent =
           `มีข้อมูล${label} ${people.length} รายการ`;
 
         results.innerHTML =
-          `<div class="message">พิมพ์ชื่อหรือนามสกุลเพื่อเริ่มค้นหา</div>`;
+          `<div class="message">
+            พิมพ์ชื่อหรือนามสกุลเพื่อเริ่มค้นหา
+          </div>`;
 
       } catch (error) {
+
         console.error(error);
 
-        status.textContent = "โหลดข้อมูลไม่สำเร็จ";
+        status.textContent =
+          "โหลดข้อมูลไม่สำเร็จ";
 
         results.innerHTML =
-          `<div class="message">❌ เกิดข้อผิดพลาดในการเชื่อมต่อข้อมูล</div>`;
+          `<div class="message">
+            ❌ เกิดข้อผิดพลาดในการเชื่อมต่อข้อมูล
+          </div>`;
       }
     }
 
-    searchInput.addEventListener("input", function () {
-      const keyword = this.value.trim().toLowerCase();
 
-      if (!keyword) {
-        results.innerHTML =
-          `<div class="message">พิมพ์ชื่อหรือนามสกุลเพื่อเริ่มค้นหา</div>`;
-        return;
+    searchInput.addEventListener(
+      "input",
+      function () {
+
+        const keyword =
+          this.value
+            .trim()
+            .toLowerCase();
+
+        if (!keyword) {
+
+          results.innerHTML =
+            `<div class="message">
+              พิมพ์ชื่อหรือนามสกุลเพื่อเริ่มค้นหา
+            </div>`;
+
+          return;
+        }
+
+        const found =
+          people.filter(person => {
+
+            const name =
+              String(
+                person.name || ""
+              ).toLowerCase();
+
+            const email =
+              String(
+                person.email || ""
+              ).toLowerCase();
+
+            return (
+              name.includes(keyword) ||
+              email.includes(keyword)
+            );
+
+          });
+
+        showResults(found);
       }
+    );
 
-      const found = people.filter(person => {
-        const name = String(person.name || "").toLowerCase();
-        const email = String(person.email || "").toLowerCase();
-
-        return (
-          name.includes(keyword) ||
-          email.includes(keyword)
-        );
-      });
-
-      showResults(found);
-    });
 
     function showResults(data) {
+
       if (data.length === 0) {
+
         results.innerHTML =
-          `<div class="message">ไม่พบข้อมูล</div>`;
+          `<div class="message">
+            ไม่พบข้อมูล
+          </div>`;
+
         return;
       }
 
-      results.innerHTML = data.slice(0, 50).map(person => `
-        <div class="card">
+      results.innerHTML =
+        data
+          .slice(0, 50)
+          .map(person => `
 
-          <div class="info">
-            <div class="name">
-              ${escapeHTML(person.name)}
+            <div class="card">
+
+              <div class="info">
+
+                <div class="name">
+                  ${escapeHTML(person.name)}
+                </div>
+
+                <div class="email">
+                  ${escapeHTML(person.email)}
+                </div>
+
+              </div>
+
+              <button
+                class="copy-btn"
+                data-email="${escapeHTML(person.email)}"
+                onclick="copyEmail(this)"
+              >
+                📋 คัดลอก
+              </button>
+
             </div>
 
-            <div class="email">
-              ${escapeHTML(person.email)}
-            </div>
-          </div>
-
-          <button
-            class="copy-btn"
-            data-email="${escapeHTML(person.email)}"
-            onclick="copyEmail(this)"
-          >
-            📋 คัดลอก
-          </button>
-
-        </div>
-      `).join("");
+          `)
+          .join("");
     }
 
+
     async function copyEmail(button) {
-      const email = button.dataset.email;
+
+      const email =
+        button.dataset.email;
 
       try {
+
         await navigator.clipboard.writeText(email);
 
-        const oldText = button.innerHTML;
-        button.innerHTML = "✓ คัดลอกแล้ว";
+        const oldText =
+          button.innerHTML;
+
+        button.innerHTML =
+          "✓ คัดลอกแล้ว";
 
         setTimeout(() => {
-          button.innerHTML = oldText;
+          button.innerHTML =
+            oldText;
         }, 1300);
 
       } catch (error) {
+
         alert(email);
+
       }
     }
 
+
     function escapeHTML(text) {
-      const div = document.createElement("div");
-      div.textContent = text || "";
+
+      const div =
+        document.createElement("div");
+
+      div.textContent =
+        text || "";
+
       return div.innerHTML;
     }
 
+
     loadData();
+
   </script>
 
 </body>
